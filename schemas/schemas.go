@@ -16,6 +16,8 @@ func IdentifySchema(topicName string) interface{} {
         return &RenderSubmittedDataDocument{}
     case "filing-received":
         return &FilingReceived{}
+    case "filing-processed":
+        return &FilingProcessed{}
     }
     return nil
 }
