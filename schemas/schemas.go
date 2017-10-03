@@ -10,6 +10,12 @@ func IdentifySchema(topicName string) interface{} {
         return &DocumentGenerationStarted{}
     case "document-generation-completed":
         return &DocumentGenerationCompleted{}
+    case "email-send":
+        return &EmailSend{}
+    case "render-submitted-data-document":
+        return &RenderSubmittedDataDocument{}
+    case "filing-received":
+        return &FilingReceived{}
     }
     return nil
 }
