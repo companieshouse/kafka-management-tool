@@ -73,6 +73,7 @@ ConsumerLoop:
 			// Unmarshal message value and assign it to schemaStruct
 			if err = consumerAvro.Unmarshal(msg.Value, schemaStruct); err != nil {
 				fmt.Errorf("error unmarshalling avro: %v", err)
+				os.Exit(1)
 			}
 
 			// create avro producer
@@ -84,6 +85,7 @@ ConsumerLoop:
 			messageBytes, err := producerAvro.Marshal(schemaStruct)
 			if err != nil {
 				fmt.Errorf("error marshalling avro: %v", err)
+				os.Exit(1)
 			}
 
 			// create producer message
@@ -103,6 +105,7 @@ ConsumerLoop:
 			partition, offset, err := p.Send(producerMessage)
 			if err != nil {
 				fmt.Errorf("error republishing message to topic: %v", err)
+				os.Exit(1)
 			}
 
 			fmt.Printf("Message republished to topic: %v using partition: %v offset: %v \n", *topicPtr, partition, offset)
