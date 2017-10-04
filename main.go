@@ -65,16 +65,25 @@ ConsumerLoop:
 			var err error
 
 			// Get schema from schema registry and use it to create avro consumer
+			fmt.Printf("Getting schema for topic: %v \n", *topicPtr)
 			schema, err := schema.Get(*schemaRegistryPtr, *schemaPtr)
+			if err != nil {
+				fmt.Errorf("rror getting schema: %v", err)
+				os.Exit(1)
+			}
+			fmt.Printf("Retrieved schema for topic: %v \n", *topicPtr)
+
 			consumerAvro := &avro.Schema{
 				Definition: schema,
 			}
 
 			// Unmarshal message value and assign it to schemaStruct
+			fmt.Printf("Unmarshalling message for offset: %v \n", msg.Offset)
 			if err = consumerAvro.Unmarshal(msg.Value, schemaStruct); err != nil {
-				fmt.Errorf("error unmarshalling avro: %v", err)
+				fmt.Errorf("error unmarshalling avro message for offset: %v, %v \n", msg.Offset, err)
 				os.Exit(1)
 			}
+			fmt.Printf("Message successfully unmarshalled for offset: %v \n", msg.Offset)
 
 			// create avro producer
 			producerAvro := &avro.Schema{
@@ -82,11 +91,13 @@ ConsumerLoop:
 			}
 
 			// Marshall schemaStruct that contains message value ready for republishing
+			fmt.Printf("Marshalling message for offset: %v \n", msg.Offset)
 			messageBytes, err := producerAvro.Marshal(schemaStruct)
 			if err != nil {
-				fmt.Errorf("error marshalling avro: %v", err)
+				fmt.Errorf("error marshalling avro message for offset: %v, %v \n", msg.Offset, err)
 				os.Exit(1)
 			}
+			fmt.Printf("Message successfully marshalled for offset: %v \n", msg.Offset)
 
 			// create producer message
 			producerMessage := &producer.Message{
@@ -102,13 +113,14 @@ ConsumerLoop:
 			}
 
 			// republish message
+			fmt.Printf("Republishing message for offset: %v \n", msg.Offset)
 			partition, offset, err := p.Send(producerMessage)
 			if err != nil {
-				fmt.Errorf("error republishing message to topic: %v", err)
+				fmt.Errorf("error republishing message with offset: %v, %v \n", msg.Offset, err)
 				os.Exit(1)
 			}
-
-			fmt.Printf("Message republished to topic: %v using partition: %v offset: %v \n", *topicPtr, partition, offset)
+			fmt.Printf("Successfully republished message with offset %v to topic: %v using partition: %v new offset: %v \n", msg.Offset, *topicPtr, partition, offset)
+			fmt.Println("---------------------")
 
 			consumed++
 		case <-signals:
@@ -142,7 +154,7 @@ func printFlags() {
 // The offset slice is passed into method and is iterated over and each message
 // related to the offset in the topic/partition is outputted into the 'out' chan
 func consumePartition(consumer sarama.Consumer, topic string, partition int32, out chan *sarama.ConsumerMessage, offsetArray []int64) {
-	for offset := range offsetArray {
+	for _, offset := range offsetArray {
 		partitionConsumer, err := consumer.ConsumePartition(topic, partition, int64(offset))
 		if err != nil {
 			panic(err)
