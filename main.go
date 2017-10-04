@@ -21,23 +21,19 @@ var (
 	topicPtr          = flag.String("topic", "", "Topic name")
 	schemaPtr         = flag.String("schema", "", "Schema name")
 	schemaRegistryPtr = flag.String("schema-registry", "", "Schema Registry")
-	partitionPtr      = flag.Int64("partition", 0, "Partition")
-	zookeeperPtr      = flag.String("zookeeper", "", "Zookeeper address")
-	offsetPtr         = flag.String("offset", "-1", "Offset number")
-	jsonOutPtr        = flag.Int("json-out", -1, "Print deserialized JSON message")
+	partitionPtr      = flag.Int64("partition", 0, "Partition (default: 0)")
+	offsetPtr         = flag.String("offset", "", "Offset number")
+	jsonOutPtr        = flag.Int64("json-out", 0, "Print deserialized JSON message (default: 0)")
 )
 
 func main() {
 	flag.Parse()
-    flag.PrintDefaults()
-	fmt.Println("broker:", *brokerPtr)
-	fmt.Println("topic:", *topicPtr)
-	fmt.Println("schema:", *schemaPtr)
-	fmt.Println("schema-registry:", *schemaRegistryPtr)
-	fmt.Println("partition:", *partitionPtr)
-	fmt.Println("zookeeper-registry:", *zookeeperPtr)
-	fmt.Println("offset:", *offsetPtr)
-	fmt.Println("json-out:", *jsonOutPtr)
+
+	// check if all mandatory flags have been provided
+    validateFlags()
+
+    // Print flags and parameters of the tool
+    printFlags()
 
 	// create offset array
 	offsetArray := createOffsetArray(*offsetPtr)
@@ -69,7 +65,7 @@ ConsumerLoop:
 			var err error
 
 			// Get schema from schema registry and use it to create avro consumer
-			schema, err := schema.Get(*schemaRegistryPtr, *topicPtr)
+			schema, err := schema.Get(*schemaRegistryPtr, *schemaPtr)
 			consumerAvro := &avro.Schema{
 				Definition: schema,
 			}
@@ -117,6 +113,27 @@ ConsumerLoop:
 			break ConsumerLoop
 		}
 	}
+}
+
+
+// Validates the flags to make sure all mandatory flags have been supplied
+// throw an error if not the case
+func validateFlags() {
+    flag.VisitAll(func (f *flag.Flag) {
+        if string(f.Value.String()) == "" {
+            fmt.Printf("Value not supplied for: %v \n", f.Name)
+            os.Exit(1)
+        }
+        //fmt.Printf("%v: %v\n", f.Name, f.Value)
+    })
+}
+
+// Prints the flags and parameters of the tool
+func printFlags() {
+    fmt.Println("Parameters:")
+    flag.VisitAll(func (f *flag.Flag) {
+        fmt.Printf("%v: %v\n", f.Name, f.Value)
+    })
 }
 
 // The offset slice is passed into method and is iterated over and each message
