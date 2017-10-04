@@ -30,10 +30,10 @@ func main() {
 	flag.Parse()
 
 	// check if all mandatory flags have been provided
-    validateFlags()
+	validateFlags()
 
-    // Print flags and parameters of the tool
-    printFlags()
+	// Print flags and parameters of the tool
+	printFlags()
 
 	// create offset array
 	offsetArray := createOffsetArray(*offsetPtr)
@@ -83,7 +83,7 @@ ConsumerLoop:
 			// Marshall schemaStruct that contains message value ready for republishing
 			messageBytes, err := producerAvro.Marshal(schemaStruct)
 			if err != nil {
-                fmt.Errorf("error marshalling avro: %v", err)
+				fmt.Errorf("error marshalling avro: %v", err)
 			}
 
 			// create producer message
@@ -95,14 +95,14 @@ ConsumerLoop:
 			//create new producer
 			p, err := producer.New(&producer.Config{Acks: &producer.WaitForAll, BrokerAddrs: []string{*brokerPtr}})
 			if err != nil {
-                fmt.Errorf("error creating producer: %v", err)
+				fmt.Errorf("error creating producer: %v", err)
 				os.Exit(1)
 			}
 
 			// republish message
 			partition, offset, err := p.Send(producerMessage)
 			if err != nil {
-                fmt.Errorf("error republishing message to topic: %v", err)
+				fmt.Errorf("error republishing message to topic: %v", err)
 			}
 
 			fmt.Printf("Message republished to topic: %v using partition: %v offset: %v \n", *topicPtr, partition, offset)
@@ -115,24 +115,23 @@ ConsumerLoop:
 	}
 }
 
-
 // Validates the flags to make sure all mandatory flags have been supplied
 // throw an error if not the case
 func validateFlags() {
-    flag.VisitAll(func (f *flag.Flag) {
-        if string(f.Value.String()) == "" {
-            fmt.Printf("Value not supplied for: %v \n", f.Name)
-            os.Exit(1)
-        }
-    })
+	flag.VisitAll(func(f *flag.Flag) {
+		if string(f.Value.String()) == "" {
+			fmt.Printf("Value not supplied for: %v \n", f.Name)
+			os.Exit(1)
+		}
+	})
 }
 
 // Prints the flags and parameters of the tool
 func printFlags() {
-    fmt.Println("Parameters:")
-    flag.VisitAll(func (f *flag.Flag) {
-        fmt.Printf("%v: %v\n", f.Name, f.Value)
-    })
+	fmt.Println("Parameters:")
+	flag.VisitAll(func(f *flag.Flag) {
+		fmt.Printf("%v: %v\n", f.Name, f.Value)
+	})
 }
 
 // The offset slice is passed into method and is iterated over and each message
