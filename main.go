@@ -29,7 +29,7 @@ var (
 
 func main() {
 	flag.Parse()
-
+    flag.PrintDefaults()
 	fmt.Println("broker:", *brokerPtr)
 	fmt.Println("topic:", *topicPtr)
 	fmt.Println("schema:", *schemaPtr)
@@ -76,7 +76,7 @@ ConsumerLoop:
 
 			// Unmarshal message value and assign it to schemaStruct
 			if err = consumerAvro.Unmarshal(msg.Value, schemaStruct); err != nil {
-				fmt.Println("Error unmarshalling avro:")
+				fmt.Errorf("error unmarshalling avro: %v", err)
 			}
 
 			// create avro producer
@@ -87,7 +87,7 @@ ConsumerLoop:
 			// Marshall schemaStruct that contains message value ready for republishing
 			messageBytes, err := producerAvro.Marshal(schemaStruct)
 			if err != nil {
-				fmt.Println("Error Marshalling avro:")
+                fmt.Errorf("error marshalling avro: %v", err)
 			}
 
 			// create producer message
@@ -99,15 +99,17 @@ ConsumerLoop:
 			//create new producer
 			p, err := producer.New(&producer.Config{Acks: &producer.WaitForAll, BrokerAddrs: []string{*brokerPtr}})
 			if err != nil {
+                fmt.Errorf("error creating producer: %v", err)
 				os.Exit(1)
 			}
 
 			// republish message
 			partition, offset, err := p.Send(producerMessage)
 			if err != nil {
-				fmt.Println("Error republishing message:")
+                fmt.Errorf("error republishing message to topic: %v", err)
 			}
-			fmt.Println("Message republished!", partition, offset)
+
+			fmt.Printf("Message republished to topic: %v using partition: %v offset: %v \n", *topicPtr, partition, offset)
 
 			consumed++
 		case <-signals:
