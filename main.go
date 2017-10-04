@@ -17,14 +17,14 @@ import (
 
 // Assigns all flags to variables
 var (
-	brokerPtr         = flag.String("broker", "", "Broker")
+	brokerPtr         = flag.String("broker", "", "Broker address")
 	topicPtr          = flag.String("topic", "", "Topic name")
-	schemaPtr         = flag.String("schema", "", "Schema")
+	schemaPtr         = flag.String("schema", "", "Schema name")
 	schemaRegistryPtr = flag.String("schema-registry", "", "Schema Registry")
 	partitionPtr      = flag.Int64("partition", 0, "Partition")
-	zookeeperPtr      = flag.String("zookeeper", "", "Zookeeper")
+	zookeeperPtr      = flag.String("zookeeper", "", "Zookeeper address")
 	offsetPtr         = flag.String("offset", "-1", "Offset number")
-	jsonOutPtr        = flag.Int("json-out", -1, "Does deserialized JSON get printed to terminal?")
+	jsonOutPtr        = flag.Int("json-out", -1, "Print deserialized JSON message")
 )
 
 func main() {
