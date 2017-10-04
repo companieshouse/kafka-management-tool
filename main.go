@@ -13,6 +13,8 @@ import (
 	"github.com/companieshouse/chs.go/avro"
 	"github.com/companieshouse/chs.go/avro/schema"
 	"github.com/companieshouse/chs.go/kafka/producer"
+	// "encoding/json"
+	"encoding/json"
 )
 
 // Assigns all flags to variables
@@ -61,47 +63,22 @@ ConsumerLoop:
 		select {
 		case msg := <-messages:
 
-			schemaStruct := schemas.IdentifySchema(*topicPtr)
-			var err error
+			// make messageBytes channel
+			messageBytes := make(chan []byte)
 
-			// Get schema from schema registry and use it to create avro consumer
-			fmt.Printf("Getting schema for topic: %v \n", *topicPtr)
-			schema, err := schema.Get(*schemaRegistryPtr, *schemaPtr)
-			if err != nil {
-				fmt.Errorf("rror getting schema: %v", err)
-				os.Exit(1)
+			// if jsonOutPtr is set to 1, then output JSON and republish
+			// otherwise just republish message
+			if *jsonOutPtr == 1 {
+				go outputJSON(msg, messageBytes)
+			} else {
+				go func() {
+					messageBytes <- msg.Value
+				}()
 			}
-			fmt.Printf("Retrieved schema for topic: %v \n", *topicPtr)
-
-			consumerAvro := &avro.Schema{
-				Definition: schema,
-			}
-
-			// Unmarshal message value and assign it to schemaStruct
-			fmt.Printf("Unmarshalling message for offset: %v \n", msg.Offset)
-			if err = consumerAvro.Unmarshal(msg.Value, schemaStruct); err != nil {
-				fmt.Errorf("error unmarshalling avro message for offset: %v, %v \n", msg.Offset, err)
-				os.Exit(1)
-			}
-			fmt.Printf("Message successfully unmarshalled for offset: %v \n", msg.Offset)
-
-			// create avro producer
-			producerAvro := &avro.Schema{
-				Definition: schema,
-			}
-
-			// Marshall schemaStruct that contains message value ready for republishing
-			fmt.Printf("Marshalling message for offset: %v \n", msg.Offset)
-			messageBytes, err := producerAvro.Marshal(schemaStruct)
-			if err != nil {
-				fmt.Errorf("error marshalling avro message for offset: %v, %v \n", msg.Offset, err)
-				os.Exit(1)
-			}
-			fmt.Printf("Message successfully marshalled for offset: %v \n", msg.Offset)
 
 			// create producer message
 			producerMessage := &producer.Message{
-				Value: messageBytes,
+				Value: <-messageBytes,
 				Topic: *topicPtr,
 			}
 
@@ -128,6 +105,58 @@ ConsumerLoop:
 			break ConsumerLoop
 		}
 	}
+}
+
+func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
+	schemaStruct := schemas.IdentifySchema(*topicPtr)
+	var err error
+
+	// Get schema from schema registry and use it to create avro consumer
+	fmt.Printf("Getting schema for topic: %v \n", *topicPtr)
+	schema, err := schema.Get(*schemaRegistryPtr, *schemaPtr)
+	if err != nil {
+		fmt.Errorf("rror getting schema: %v", err)
+		os.Exit(1)
+	}
+	fmt.Printf("Retrieved schema for topic: %v \n", *topicPtr)
+
+	consumerAvro := &avro.Schema{
+		Definition: schema,
+	}
+
+	// Unmarshal message value and assign it to schemaStruct
+	fmt.Printf("Unmarshalling message for offset: %v \n", msg.Offset)
+	if err = consumerAvro.Unmarshal(msg.Value, schemaStruct); err != nil {
+		fmt.Errorf("error unmarshalling avro message for offset: %v, %v \n", msg.Offset, err)
+		os.Exit(1)
+	}
+	fmt.Printf("Message successfully unmarshalled for offset: %v \n", msg.Offset)
+
+	// Print the unmarshalled message out to the terminal
+	fmt.Println("Unmarshalled message:")
+	data, err := json.Marshal(schemaStruct)
+	if err != nil {
+		fmt.Errorf("error marshalling JSON message for offset: %v, %v \n", msg.Offset, err)
+		os.Exit(1)
+	}
+	fmt.Println(string(data))
+
+	// create avro producer
+	producerAvro := &avro.Schema{
+		Definition: schema,
+	}
+
+	// Marshall schemaStruct that contains message value ready for republishing
+	fmt.Printf("Marshalling message for offset: %v \n", msg.Offset)
+	message, err := producerAvro.Marshal(schemaStruct)
+	if err != nil {
+		fmt.Errorf("error marshalling avro message for offset: %v, %v \n", msg.Offset, err)
+		os.Exit(1)
+	}
+	fmt.Printf("Message successfully marshalled for offset: %v \n", msg.Offset)
+
+	// output the marshalled message into the messageBytes chan
+	messageBytes <- message
 }
 
 // Validates the flags to make sure all mandatory flags have been supplied
