@@ -8,13 +8,13 @@ import (
 	"strconv"
 	"strings"
 
+	"encoding/json"
+
 	"./schemas"
 	"github.com/Shopify/sarama"
 	"github.com/companieshouse/chs.go/avro"
 	"github.com/companieshouse/chs.go/avro/schema"
 	"github.com/companieshouse/chs.go/kafka/producer"
-	// "encoding/json"
-	"encoding/json"
 )
 
 // Assigns all flags to variables
