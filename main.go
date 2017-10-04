@@ -128,10 +128,12 @@ func validateFlags() {
 
 // Prints the flags and parameters of the tool
 func printFlags() {
+	fmt.Println("---------------------")
 	fmt.Println("Parameters:")
 	flag.VisitAll(func(f *flag.Flag) {
 		fmt.Printf("%v: %v\n", f.Name, f.Value)
 	})
+	fmt.Println("---------------------")
 }
 
 // The offset slice is passed into method and is iterated over and each message
