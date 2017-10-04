@@ -124,7 +124,6 @@ func validateFlags() {
             fmt.Printf("Value not supplied for: %v \n", f.Name)
             os.Exit(1)
         }
-        //fmt.Printf("%v: %v\n", f.Name, f.Value)
     })
 }
 
