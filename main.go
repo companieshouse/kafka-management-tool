@@ -1,17 +1,18 @@
 package main
 
 import (
-	"./schemas"
 	"flag"
 	"fmt"
-	"github.com/Shopify/sarama"
-	"github.com/companieshouse/chs.go/avro"
-	"github.com/companieshouse/chs.go/avro/schema"
-	"github.com/companieshouse/chs.go/kafka/producer"
 	"os"
 	"os/signal"
 	"strconv"
 	"strings"
+
+	"./schemas"
+	"github.com/Shopify/sarama"
+	"github.com/companieshouse/chs.go/avro"
+	"github.com/companieshouse/chs.go/avro/schema"
+	"github.com/companieshouse/chs.go/kafka/producer"
 )
 
 // Assigns all flags to variables
