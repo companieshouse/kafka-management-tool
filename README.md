@@ -6,9 +6,10 @@ The kafka-management-tool is a command line `Go` tool that has been created for 
 ## Prerequisites 
 To use this tool you will need to:
 - Git clone this repo onto a local environment
-- Have Go installed
+- Have `Go` installed
 
 ## In-depth
 As described in the introduction, this tool will print and republish specific messages into the specified Kafka topics. Given that the mandatory flags are entered into the tool, the tool will go through a number of steps in order to print and republish the chosen message. Below is the basic flow of the tool.
 
-![alt text](https://user-images.githubusercontent.com/29541485/31216979-5a986170-a9ad-11e7-8117-795084401a56.png)
+![alt text](https://user-images.githubusercontent.com/29541485/31217447-e5c36546-a9ae-11e7-94b8-89f38f59b273.png)
+
