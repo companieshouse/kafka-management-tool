@@ -24,80 +24,10 @@ As described in the introduction, this tool will print and republish specific me
 ### Walkthrough
 1) One of the first things the tool does is validate the flags that are passed in. If it sees that one or more mandatory flag isn't passed in. It will throw and error explaining this (the mandatory flags can be found below). Once validation is passed, the tool assumes that the information you have passed into the flags is correct. It then prints these flags back out into the terminal for reference sake.
 
-```go
-// Validates the flags to make sure all mandatory flags have been supplied
-// throw an error if not the case
-func validateFlags() {
-	flag.VisitAll(func(f *flag.Flag) {
-		if string(f.Value.String()) == "" {
-			fmt.Printf("Value not supplied for: %v \n", f.Name)
-			os.Exit(1)
-		}
-	})
-}
-
-// Prints the flags and parameters of the tool
-func printFlags() {
-	fmt.Println("---------------------")
-	fmt.Println("Parameters:")
-	flag.VisitAll(func(f *flag.Flag) {
-		fmt.Printf("%v: %v\n", f.Name, f.Value)
-	})
-	fmt.Println("---------------------")
-}
-```
-
 2) The second step is where the tool determines the offset(s). There can be two types of offset passed into the tool. A single offset i.e. `20` or a range of offsets i.e. `20-100`. As long as you include the minus (`-`) between the `from` and `to` offsets then the tool will know that it's a range and it will add those and the numbers between, to the offset array. Note: if you have specified just one offset, it will still add this to the array.
-
-```go
-// This creates the offset array depending on whether a range or a single value
-// is entered as an argument to the tool
-func createOffsetArray(offset string) []int64 {
-	arraySize := make([]int64, 0)
-	if strings.ContainsAny(offset, "-") {
-		slice := strings.Split(offset, "-")
-		minRange, err := strconv.ParseInt(slice[0], 10, 64)
-		maxRange, err := strconv.ParseInt(slice[1], 10, 64)
-		if err != nil {
-			panic(err)
-		}
-
-		index := 0
-		for value := minRange; value <= maxRange; value++ {
-			arraySize = append(arraySize, value)
-			index++
-		}
-	} else {
-		value, err := strconv.ParseInt(offset, 10, 64)
-		if err != nil {
-			panic(err)
-		}
-		arraySize = append(arraySize, value)
-	}
-	return arraySize
-}
-```
 
 3) This is the step where the tool uses the offset array to retrieve the messages from the specified topic and partition. It does this by iterating over each offset within the offsetArray and retrieving the message based on that offset. Once the messages has been retrieved, assuming nothing has gone wrong in the retrieval. It will then add this message into the message channel.
 
-```go
-// The offset slice is passed into method and is iterated over and each message
-// related to the offset in the topic/partition is outputted into the 'out' chan
-func consumePartition(consumer sarama.Consumer, topic string, partition int32, out chan *sarama.ConsumerMessage, offsetArray []int64) {
-	for _, offset := range offsetArray {
-		partitionConsumer, err := consumer.ConsumePartition(topic, partition, int64(offset))
-		if err != nil {
-			panic(err)
-		}
-
-		select {
-		case msg := <-partitionConsumer.Messages():
-			partitionConsumer.Close()
-			out <- msg
-		}
-	}
-}
-```
 At this point the tool iterates over all retrieved messages added into the message channel and does the following steps to each message.
 
 4) Here, is where the tool can go one of two ways. If the `json-out` flag has been set to true `1`, it will unmarshall each message and print the raw JSON into the terminal, if however the `json-out` flag has been set to `0` or isn't specified at all, it will skip the JSON printing logic and go straight to step 5.
@@ -107,17 +37,6 @@ At this point the tool iterates over all retrieved messages added into the messa
  - b)  - Once the avro struct has been created and the schema has been retrieved, it will now use the avro consumer to unmarshall the message into the avro struct. At this point the values are mapped to the correct keys.
 
  - c)  -With the unmarshalled message mapped and held in the avro struct, it now marshalls that data into raw JSON using `json.Marshal` then printing the JSON to the terminal
-
-```go
-	// Print the unmarshalled message out to the terminal
-	fmt.Println("Unmarshalled message:")
-	data, err := json.Marshal(schemaStruct)
-	if err != nil {
-		fmt.Errorf("error marshalling JSON message for offset: %v, %v \n", msg.Offset, err)
-		os.Exit(1)
-	}
-	fmt.Println(string(data))
-```
 
  - d)  - Once the message has been printed to the terminal, the avro struct is marshalled back into the same format it was in initially
 
