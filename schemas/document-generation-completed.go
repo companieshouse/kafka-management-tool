@@ -1,6 +1,6 @@
 package schemas
 
-//  'document-generation-completed' topic struct
+//  DocumentGenerationCompleted struct for document-generation-completed topic
 type DocumentGenerationCompleted struct {
     RequesterID                     string                          `avro:"requester_id"                    json:"requester_id"`
 	ID                              string                          `avro:"id"                              json:"id"`
@@ -12,7 +12,7 @@ type DocumentGenerationCompleted struct {
 	DocumentSize                    string                          `avro:"document_size"                   json:"document_size"`
 }
 
-//  'document-generation-completed' topic struct
+//  DescriptionValues struct for document-generation-completed topic
 type DescriptionValues struct {
 	Date                            string                          `avro:"date"                            json:"date"`
 }

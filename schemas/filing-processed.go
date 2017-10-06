@@ -1,6 +1,6 @@
 package schemas
 
-// FilingProcessed represents the avro schema filing-processed
+// FilingProcessed struct for filing-processed topic
 type FilingProcessed struct {
 	ApplicationID                   string                          `avro:"application_id"                  json:"application_id"`
 	ChannelID                       string                          `avro:"channel_id"                      json:"channel_id"`
@@ -10,18 +10,18 @@ type FilingProcessed struct {
 	Attempt                         int32                           `avro:"attempt"                         json:"-"`
 }
 
-// Presenter represents presenter within filing-processed schema
+// Presenter struct represents Presenter within FilingProcessed struct
 type Presenter struct {
 	Language                        string                          `avro:"language"                        json:"language"`
 	UserID                          string                          `avro:"user_id"                         json:"user_id"`
 }
 
-// Submission represents submission within filing-processed schema
+// Submission represents Submission within filing-processed struct
 type Submission struct {
 	TransactionID                   string                          `avro:"transaction_id"                  json:"transaction_id"`
 }
 
-// Response represents response within filing-processed schema
+// Response represents Response within FilingProcessed struct
 type Response struct {
 	CompanyName                     string                          `avro:"company_name"                    json:"company_name,omitempty"`
 	CompanyNumber                   string                          `avro:"company_number"                  json:"company_number,omitempty"`
@@ -32,7 +32,7 @@ type Response struct {
 	ProcessedAt                     string                          `avro:"processed_at"                    json:"processed_at"`
 }
 
-// Reject represents a reject within response
+// Reject represents Reject within Response struct
 type Reject struct {
 	ReasonsEnglish                  []string                        `avro:"reasons_english"                 json:"reasons_english"`
 	ReasonsWelsh                    []string                        `avro:"reasons_welsh"                   json:"reasons_welsh"`

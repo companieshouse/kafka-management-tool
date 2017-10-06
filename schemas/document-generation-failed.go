@@ -1,6 +1,6 @@
 package schemas
 
-//  'document-generation-failed' topic struct
+//  DocumentGenerationFailed struct for document-generation-failed topic
 type DocumentGenerationFailed struct {
 	RequesterID                     string                          `avro:"requester_id"                    json:"requester_id"`
 	Description                     string                          `avro:"description"                     json:"description"`
