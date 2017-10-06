@@ -85,7 +85,8 @@ ConsumerLoop:
 			//create new producer
 			p, err := producer.New(&producer.Config{Acks: &producer.WaitForAll, BrokerAddrs: []string{*brokerPtr}})
 			if err != nil {
-				fmt.Errorf("error creating producer: %v", err)
+				fmt.Println("error creating producer")
+				panic(err)
 				os.Exit(1)
 			}
 
@@ -93,7 +94,8 @@ ConsumerLoop:
 			fmt.Printf("Republishing message for offset: %v \n", msg.Offset)
 			partition, offset, err := p.Send(producerMessage)
 			if err != nil {
-				fmt.Errorf("error republishing message with offset: %v, %v \n", msg.Offset, err)
+				fmt.Println("error republishing message with offset: %v, \n", msg.Offset)
+				panic(err)
 				os.Exit(1)
 			}
 			fmt.Printf("Successfully republished message with offset %v to topic: %v using partition: %v new offset: %v \n", msg.Offset, *topicPtr, partition, offset)
@@ -103,9 +105,9 @@ ConsumerLoop:
 
 			// check if we have hit the end of the array of messages
 			// if so, exit the tool by breaking the ConsumerLoop
-            if consumed == len(offsetArray) {
-                break ConsumerLoop
-            }
+			if consumed == len(offsetArray) {
+				break ConsumerLoop
+			}
 		case <-signals:
 			fmt.Println("break")
 			break ConsumerLoop
@@ -121,7 +123,8 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 	fmt.Printf("Getting schema for topic: %v \n", *topicPtr)
 	schema, err := schema.Get(*schemaRegistryPtr, *schemaPtr)
 	if err != nil {
-		fmt.Errorf("rror getting schema: %v", err)
+		fmt.Println("error getting schema")
+		panic(err)
 		os.Exit(1)
 	}
 	fmt.Printf("Retrieved schema for topic: %v \n", *topicPtr)
@@ -133,7 +136,8 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 	// Unmarshal message value and assign it to schemaStruct
 	fmt.Printf("Unmarshalling message for offset: %v \n", msg.Offset)
 	if err = consumerAvro.Unmarshal(msg.Value, schemaStruct); err != nil {
-		fmt.Errorf("error unmarshalling avro message for offset: %v, %v \n", msg.Offset, err)
+		fmt.Errorf("error unmarshalling avro message for offset: %v \n", msg.Offset)
+		panic(err)
 		os.Exit(1)
 	}
 	fmt.Printf("Message successfully unmarshalled for offset: %v \n", msg.Offset)
@@ -142,7 +146,8 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 	fmt.Println("Unmarshalled message:")
 	data, err := json.Marshal(schemaStruct)
 	if err != nil {
-		fmt.Errorf("error marshalling JSON message for offset: %v, %v \n", msg.Offset, err)
+		fmt.Errorf("error marshalling JSON message for offset: %v \n", msg.Offset)
+		panic(err)
 		os.Exit(1)
 	}
 	fmt.Println(string(data))
@@ -156,7 +161,8 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 	fmt.Printf("Marshalling message for offset: %v \n", msg.Offset)
 	message, err := producerAvro.Marshal(schemaStruct)
 	if err != nil {
-		fmt.Errorf("error marshalling avro message for offset: %v, %v \n", msg.Offset, err)
+		fmt.Errorf("error marshalling avro message for offset: %v \n", msg.Offset)
+		panic(err)
 		os.Exit(1)
 	}
 	fmt.Printf("Message successfully marshalled for offset: %v \n", msg.Offset)
