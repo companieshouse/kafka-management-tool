@@ -100,6 +100,12 @@ ConsumerLoop:
 			fmt.Println("---------------------")
 
 			consumed++
+
+			// check if we have hit the end of the array of messages
+			// if so, exit the tool by breaking the ConsumerLoop
+            if consumed == len(offsetArray) {
+                break ConsumerLoop
+            }
 		case <-signals:
 			fmt.Println("break")
 			break ConsumerLoop
