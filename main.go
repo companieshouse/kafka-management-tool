@@ -225,10 +225,8 @@ func createOffsetArray(offset string) []int64 {
 			panic(err)
 		}
 
-		index := 0
 		for value := minRange; value <= maxRange; value++ {
 			arraySize = append(arraySize, value)
-			index++
 		}
 	} else {
 		value, err := strconv.ParseInt(offset, 10, 64)
