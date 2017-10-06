@@ -3,7 +3,7 @@ package schemas
 //  FilingReceived struct for filing-received topic
 type FilingReceived struct {
 	ApplicationID                   string                          `avro:"application_id"                  json:"application_id"`
-    Attempt                         int32                           `avro:"attempt"                         json:"attempt"`
+	Attempt                         int32                           `avro:"attempt"                         json:"attempt"`
 	ChannelID                       string                          `avro:"channel_id"                      json:"channel_id"`
 	Presenter                       PresenterFilingRecieved         `avro:"presenter"                       json:"presenter"`
 	Submission                      SubmissionFilingRecieved        `avro:"published_at"                    json:"published_at"`
