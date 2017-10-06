@@ -216,6 +216,10 @@ func createOffsetArray(offset string) []int64 {
 	if strings.ContainsAny(offset, "-") {
 		slice := strings.Split(offset, "-")
 		minRange, err := strconv.ParseInt(slice[0], 10, 64)
+		if err != nil {
+			panic(err)
+		}
+
 		maxRange, err := strconv.ParseInt(slice[1], 10, 64)
 		if err != nil {
 			panic(err)
