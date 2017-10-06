@@ -7,5 +7,5 @@ type RenderSubmittedDataDocument struct {
 	ResourceID   string `avro:"resource_id"                          json:"resource_id"`
 	ContentType  string `avro:"content_type"                         json:"content_type"`
 	DocumentType string `avro:"document_type"                        json:"document_type"`
-	UserId       string `avro:"user_id"                              json:"user_id"`
+	UserID       string `avro:"user_id"                              json:"user_id"`
 }
