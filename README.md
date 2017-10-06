@@ -78,7 +78,7 @@ topic: topic-one
 Republishing message for offset: 693
 Successfully republished message with offset 693 to topic: topic-one using partition: 0 new offset: 834
 ---------------------
-^Cbreak
+$
 ```
 
 With JSON output:  
@@ -105,4 +105,5 @@ Message successfully marshalled for offset: 693
 Republishing message for offset: 693
 Successfully republished message with offset 693 to topic: topic-one using partition: 0 new offset: 836
 ---------------------
+$
 ```
