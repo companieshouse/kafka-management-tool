@@ -16,7 +16,7 @@ install:
 
 .PHONY: build
 build:
-	 rm kafka-management-tool
+	rm kafka-management-tool
 	go build
 
 .PHONY: all install
