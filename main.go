@@ -117,6 +117,12 @@ ConsumerLoop:
 
 func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 	schemaStruct := schemas.IdentifySchema(*topicPtr)
+
+	if schemaStruct == nil {
+        fmt.Println("no schema identified")
+        os.Exit(1)
+    }
+    
 	var err error
 
 	// Get schema from schema registry and use it to create avro consumer
