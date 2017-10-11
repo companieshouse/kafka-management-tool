@@ -24,7 +24,7 @@ var (
 	schemaPtr         = flag.String("schema", "", "Schema name")
 	schemaRegistryPtr = flag.String("schema-registry", "", "Schema Registry")
 	partitionPtr      = flag.Int64("partition", 0, "Partition (default: 0)")
-	offsetPtr         = flag.String("offset", "", "Offset number")
+	offsetPtr         = flag.String("offset", "", "Offset number, can be single offset number i.e. 10 or a range separated by the - operator i.e. 10-20")
 	jsonOutPtr        = flag.Int64("json-out", 0, "Print deserialized JSON message (default: 0)")
 )
 
