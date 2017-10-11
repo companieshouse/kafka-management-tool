@@ -3,7 +3,7 @@ all: fmt imports build
 
 .PHONY: fmt
 fmt:
-	gofmt .
+	go fmt ./...
 
 .PHONY: imports
 imports:
