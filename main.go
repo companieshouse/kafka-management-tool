@@ -119,10 +119,10 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 	schemaStruct := schemas.IdentifySchema(*topicPtr)
 
 	if schemaStruct == nil {
-        fmt.Println("no schema identified")
-        os.Exit(1)
-    }
-    
+		fmt.Println("no schema identified")
+		os.Exit(1)
+	}
+
 	var err error
 
 	// Get schema from schema registry and use it to create avro consumer
@@ -229,6 +229,11 @@ func createOffsetArray(offset string) []int64 {
 		maxRange, err := strconv.ParseInt(slice[1], 10, 64)
 		if err != nil {
 			panic(err)
+		}
+
+		if minRange > maxRange {
+			fmt.Errorf("min range cannot be greater than max range")
+			os.Exit(1)
 		}
 
 		for value := minRange; value <= maxRange; value++ {
