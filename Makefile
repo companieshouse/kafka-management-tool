@@ -1,26 +1,27 @@
 bin          := kafka-management-tool
 
-.DEFAULT_GOAL := build
-
 .PHONY: all
-all: fmt imports clean build install
+all: clean build install
 
 .PHONY: fmt
 fmt:
 	go fmt ./...
 
-.PHONY: imports
-imports:
-	go get golang.org/x/tools/cmd/goimports
-	goimports -l -w .
+.PHONY: test-unit
+test-unit:
+	go test ./... -run 'Unit'
+
+.PHONY: deps
+deps:
+	go get github.com/companieshouse/$(bin)
 
 .PHONY: clean
 clean:
 	rm -f ./$(bin) ./$(bin)-*.zip $(test_path) build.log
 
 .PHONY: build
-build: clean
-	go build
+build: deps fmt
+	go build -o ./$(bin)
 
 .PHONY: install
 install:

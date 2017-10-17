@@ -10,6 +10,7 @@ import (
 
 	"encoding/json"
 
+	"errors"
 	"github.com/Shopify/sarama"
 	"github.com/companieshouse/chs.go/avro"
 	"github.com/companieshouse/chs.go/avro/schema"
@@ -28,30 +29,57 @@ var (
 	jsonOutPtr        = flag.Int64("json-out", 0, "Print deserialized JSON message (default: 0)")
 )
 
+type Arguments struct {
+	OffsetArray []int64
+	Consumer    sarama.Consumer
+	Producer    *producer.Producer
+}
+
 func main() {
 	flag.Parse()
 
 	// check if all mandatory flags have been provided
-	validateFlags()
+	if err := validateFlags(); err != nil {
+		panic(err)
+		os.Exit(1)
+	}
 
 	// Print flags and parameters of the tool
 	printFlags()
 
-	// create offset array
-	offsetArray := createOffsetArray(*offsetPtr)
-
-	// create default config for sarama
-	config := sarama.NewConfig()
-
 	//create consumer
-	consumer, err := sarama.NewConsumer([]string{*brokerPtr}, config)
+	consumer, err := sarama.NewConsumer([]string{*brokerPtr}, nil)
 	if err != nil {
+		fmt.Println("error creating consumer")
 		panic(err)
 	}
 
+	//create new producer
+	p, err := producer.New(&producer.Config{Acks: &producer.WaitForAll, BrokerAddrs: []string{*brokerPtr}})
+	if err != nil {
+		fmt.Println("error creating producer")
+		panic(err)
+		os.Exit(1)
+	}
+
+	// pass arguments to struct
+	arguments := Arguments{
+		OffsetArray: createOffsetArray(*offsetPtr),
+		Consumer:    consumer,
+		Producer:    p,
+	}
+
+	// process the messages on the topic
+	processMessages(arguments)
+}
+
+// Process the message by republishing them and outputting them
+// if the json-out flag is set to true
+func processMessages(argu Arguments) {
+
 	// create messages chan
 	messages := make(chan *sarama.ConsumerMessage)
-	go consumePartition(consumer, *topicPtr, int32(*partitionPtr), messages, offsetArray)
+	go consumePartition(argu.Consumer, *topicPtr, int32(*partitionPtr), messages, argu.OffsetArray)
 
 	// create signals chan
 	signals := make(chan os.Signal, 1)
@@ -82,17 +110,9 @@ ConsumerLoop:
 				Topic: *topicPtr,
 			}
 
-			//create new producer
-			p, err := producer.New(&producer.Config{Acks: &producer.WaitForAll, BrokerAddrs: []string{*brokerPtr}})
-			if err != nil {
-				fmt.Println("error creating producer")
-				panic(err)
-				os.Exit(1)
-			}
-
 			// republish message
 			fmt.Printf("Republishing message for offset: %v \n", msg.Offset)
-			partition, offset, err := p.Send(producerMessage)
+			partition, offset, err := argu.Producer.Send(producerMessage)
 			if err != nil {
 				fmt.Println("error republishing message with offset: %v, \n", msg.Offset)
 				panic(err)
@@ -105,7 +125,7 @@ ConsumerLoop:
 
 			// check if we have hit the end of the array of messages
 			// if so, exit the tool by breaking the ConsumerLoop
-			if consumed == len(offsetArray) {
+			if consumed == len(argu.OffsetArray) {
 				break ConsumerLoop
 			}
 		case <-signals:
@@ -179,13 +199,32 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 
 // Validates the flags to make sure all mandatory flags have been supplied
 // throw an error if not the case
-func validateFlags() {
+func validateFlags() error {
+	args := os.Args
+	var error int8 = 0
 	flag.VisitAll(func(f *flag.Flag) {
-		if string(f.Value.String()) == "" {
+		if string(f.Value.String()) == "" && contains(string(f.Name), args) {
 			fmt.Printf("Value not supplied for: %v \n", f.Name)
-			os.Exit(1)
+			error = 1
 		}
 	})
+
+	if error == 1 {
+		return errors.New("flag validation failed")
+	}
+	return nil
+}
+
+// checks if s is within the e string array.
+// this will be used to check if the flag matches the ones passed into
+// program. This is for the unit tests as the flags package add extra flags
+func contains(s string, e []string) bool {
+	for _, a := range e {
+		if a == s {
+			return true
+		}
+	}
+	return false
 }
 
 // Prints the flags and parameters of the tool
