@@ -34,16 +34,6 @@ func TestUnitValidateFlags(t *testing.T) {
 	flag.Set("offset", "1")
 	flag.Set("schema-registry", "schema-registry")
 	flag.Set("topic", "topic")
-	//flag.Set("test.bench", "test.bench")
-	//flag.Set("test.blockprofile", "test.blockprofile")
-	//flag.Set("test.coverprofile", "test.coverprofile")
-	//flag.Set("test.cpu", "test.cpu")
-	//flag.Set("test.memprofile", "test.memprofile")
-	//flag.Set("test.cpuprofile", "test.cpuprofile")
-	//flag.Set("test.mutexprofile", "test.mutexprofile")
-	//flag.Set("test.outputdir", "test.outputdir")
-	//flag.Set("test.trace", "test.trace")
-	//flag.Set("test.run", "test.run")
 
 	Convey("test successful", t, func() {
 		So(validateFlags(), ShouldBeNil)
