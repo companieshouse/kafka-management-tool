@@ -1,21 +1,19 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
-	"os"
-	"os/signal"
-	"strconv"
-	"strings"
-
-	"encoding/json"
-
-	"errors"
 	"github.com/Shopify/sarama"
 	"github.com/companieshouse/chs.go/avro"
 	"github.com/companieshouse/chs.go/avro/schema"
 	"github.com/companieshouse/chs.go/kafka/producer"
 	"github.com/companieshouse/kafka-management-tool/schemas"
+	"os"
+	"os/signal"
+	"strconv"
+	"strings"
 )
 
 // Assigns all flags to variables
@@ -200,10 +198,10 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 // Validates the flags to make sure all mandatory flags have been supplied
 // throw an error if not the case
 func validateFlags() error {
-	args := os.Args
+	//args := os.Args
 	var error int8 = 0
 	flag.VisitAll(func(f *flag.Flag) {
-		if string(f.Value.String()) == "" && contains(string(f.Name), args) {
+		if string(f.Value.String()) == "" {
 			fmt.Printf("Value not supplied for: %v \n", f.Name)
 			error = 1
 		}

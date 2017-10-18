@@ -6,6 +6,7 @@ all: clean build install
 .PHONY: fmt
 fmt:
 	go fmt ./...
+	goimports ./..
 
 .PHONY: test-unit
 test-unit:
