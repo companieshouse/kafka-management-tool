@@ -42,7 +42,6 @@ func main() {
 	// check if all mandatory flags have been provided
 	if err := validateFlags(); err != nil {
 		panic(err)
-		os.Exit(1)
 	}
 
 	// Print flags and parameters of the tool
@@ -60,7 +59,6 @@ func main() {
 	if err != nil {
 		fmt.Println("error creating producer")
 		panic(err)
-		os.Exit(1)
 	}
 
 	// pass arguments to struct
@@ -117,7 +115,6 @@ ConsumerLoop:
 			if err != nil {
 				fmt.Println("error republishing message with offset: %v, \n", msg.Offset)
 				panic(err)
-				os.Exit(1)
 			}
 			fmt.Printf("Successfully republished message with offset %v to topic: %v using partition: %v new offset: %v \n", msg.Offset, *topicPtr, partition, offset)
 			fmt.Println("---------------------")
@@ -152,7 +149,6 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 	if err != nil {
 		fmt.Println("error getting schema")
 		panic(err)
-		os.Exit(1)
 	}
 	fmt.Printf("Retrieved schema for topic: %v \n", *topicPtr)
 
@@ -165,7 +161,6 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 	if err = consumerAvro.Unmarshal(msg.Value, schemaStruct); err != nil {
 		fmt.Errorf("error unmarshalling avro message for offset: %v \n", msg.Offset)
 		panic(err)
-		os.Exit(1)
 	}
 	fmt.Printf("Message successfully unmarshalled for offset: %v \n", msg.Offset)
 
@@ -175,7 +170,6 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 	if err != nil {
 		fmt.Errorf("error marshalling JSON message for offset: %v \n", msg.Offset)
 		panic(err)
-		os.Exit(1)
 	}
 	fmt.Println(string(data))
 
@@ -190,7 +184,6 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 	if err != nil {
 		fmt.Errorf("error marshalling avro message for offset: %v \n", msg.Offset)
 		panic(err)
-		os.Exit(1)
 	}
 	fmt.Printf("Message successfully marshalled for offset: %v \n", msg.Offset)
 
