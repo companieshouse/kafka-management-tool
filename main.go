@@ -5,15 +5,16 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"os"
+	"os/signal"
+	"strconv"
+	"strings"
+
 	"github.com/Shopify/sarama"
 	"github.com/companieshouse/chs.go/avro"
 	"github.com/companieshouse/chs.go/avro/schema"
 	"github.com/companieshouse/chs.go/kafka/producer"
 	"github.com/companieshouse/kafka-management-tool/schemas"
-	"os"
-	"os/signal"
-	"strconv"
-	"strings"
 )
 
 // Assigns all flags to variables
@@ -162,7 +163,7 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 	// Unmarshal message value and assign it to schemaStruct
 	fmt.Printf("Unmarshalling message for offset: %v \n", msg.Offset)
 	if err = consumerAvro.Unmarshal(msg.Value, schemaStruct); err != nil {
-		fmt.Errorf("error unmarshalling avro message for offset: %v \n", msg.Offset)
+		fmt.Printf("error unmarshalling avro message for offset: %v \n", msg.Offset)
 		panic(err)
 	}
 	fmt.Printf("Message successfully unmarshalled for offset: %v \n", msg.Offset)
@@ -171,7 +172,7 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 	fmt.Println("Unmarshalled message:")
 	data, err := json.Marshal(schemaStruct)
 	if err != nil {
-		fmt.Errorf("error marshalling JSON message for offset: %v \n", msg.Offset)
+		fmt.Printf("error marshalling JSON message for offset: %v \n", msg.Offset)
 		panic(err)
 	}
 	fmt.Println(string(data))
@@ -185,7 +186,7 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 	fmt.Printf("Marshalling message for offset: %v \n", msg.Offset)
 	message, err := producerAvro.Marshal(schemaStruct)
 	if err != nil {
-		fmt.Errorf("error marshalling avro message for offset: %v \n", msg.Offset)
+		fmt.Printf("error marshalling avro message for offset: %v \n", msg.Offset)
 		panic(err)
 	}
 	fmt.Printf("Message successfully marshalled for offset: %v \n", msg.Offset)
@@ -269,7 +270,7 @@ func createOffsetArray(offset string) []int64 {
 		}
 
 		if minRange > maxRange {
-			fmt.Errorf("min range cannot be greater than max range")
+			fmt.Printf("min range cannot be greater than max range")
 			os.Exit(1)
 		}
 
