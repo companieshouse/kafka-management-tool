@@ -249,8 +249,8 @@ func consumePartition(consumer sarama.Consumer, topic string, partition int32, o
 		case msg := <-partitionConsumer.Messages():
 			err := partitionConsumer.Close()
 			if err != nil {
-			    panic(err)
-            }
+				panic(err)
+			}
 			out <- msg
 		}
 	}
