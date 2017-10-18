@@ -1,13 +1,15 @@
 package main
 
 import (
-	"flag"
+	"testing"
+
 	"github.com/Shopify/sarama"
 	"github.com/Shopify/sarama/mocks"
 	"github.com/companieshouse/chs.go/kafka/producer"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
+
+var lvalue int8
 
 // TestUnitProcessMessages tests the processMessages function in main.go
 // that is the main method for the processing of the messages
@@ -21,28 +23,44 @@ func TestUnitProcessMessages(t *testing.T) {
 
 		producerMock := mocks.NewSyncProducer(t, nil)
 		producerMock.ExpectSendMessageAndSucceed()
-		var valueChecker mocks.ValueChecker
-		producerMock.ExpectSendMessageWithCheckerFunctionAndSucceed(valueChecker)
+
+		//value := mocks.ValueChecker(func(value []byte) error {
+		//   lvalue = lvalue + 1
+		//   return nil
+		//})
+		producerMock.ExpectSendMessageWithCheckerFunctionAndSucceed(increment())
 		argu := Arguments{
 			OffsetArray: offsetArraySingle,
 			Consumer:    consumerMock,
 			Producer:    &producer.Producer{producerMock},
 		}
 		processMessages(argu)
+		So(lvalue, ShouldEqual, 0)
+	})
+}
+
+// TestUnitCreateFlagMap tests the createFlagMap function in main.go
+// it checks that it doesn't return an empty map
+func TestUnitCreateFlagMap(t *testing.T) {
+	Convey("test successful - flags validated", t, func() {
+		So(createFlagMap(), ShouldNotBeEmpty)
 	})
 }
 
 // TestUnitValidateFlags tests the validateFlags function in main.go
 // that is the validation method for the flags
 func TestUnitValidateFlags(t *testing.T) {
-	flag.Set("broker", "broker")
-	flag.Set("schema", "schema")
-	flag.Set("offset", "1")
-	flag.Set("schema-registry", "schema-registry")
-	flag.Set("topic", "topic")
+	flagsMap := make(map[string]string)
+	flagsMap["broker"] = "broker"
+	flagsMap["topic"] = "topic"
+	flagsMap["schema"] = "schema"
+	flagsMap["schema-registry"] = "schema-registry"
+	flagsMap["partition"] = "partition"
+	flagsMap["offset"] = "offset"
+	flagsMap["json-out"] = "json-out"
 
 	Convey("test successful - flags validated", t, func() {
-		So(validateFlags(), ShouldBeNil)
+		So(validateFlags(flagsMap), ShouldBeNil)
 	})
 }
 
@@ -57,4 +75,11 @@ func TestUnitCreateOffsetArray(t *testing.T) {
 		So(createOffsetArray("10"), ShouldResemble, arraySingle)
 		So(createOffsetArray("10-15"), ShouldResemble, arrayRange)
 	})
+}
+
+func increment() func([]byte) error {
+	return func(val []byte) error {
+		lvalue = lvalue + 1
+		return nil
+	}
 }
