@@ -9,6 +9,8 @@ import (
 	"testing"
 )
 
+// TestUnitProcessMessages tests the processMessages function in main.go
+// that is the main method for the processing of the messages
 func TestUnitProcessMessages(t *testing.T) {
 	offsetArraySingle := []int64{1}
 
@@ -30,6 +32,8 @@ func TestUnitProcessMessages(t *testing.T) {
 	})
 }
 
+// TestUnitValidateFlags tests the validateFlags function in main.go
+// that is the validation method for the flags
 func TestUnitValidateFlags(t *testing.T) {
 	flag.Set("broker", "broker")
 	flag.Set("schema", "schema")
@@ -42,6 +46,8 @@ func TestUnitValidateFlags(t *testing.T) {
 	})
 }
 
+// TestUnitCreateOffsetArray tests the createOffsetArray function in main.go
+// that create the offset array from the offset passed into the tool as a param arg
 func TestUnitCreateOffsetArray(t *testing.T) {
 	arraySingle := []int64{10}
 

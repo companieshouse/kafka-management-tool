@@ -27,9 +27,9 @@ var (
 	jsonOutPtr        = flag.Int64("json-out", 0, "Print deserialized JSON message (default: 0)")
 )
 
-// this struct will hold the offset, consumer and producer ready for
+// Arguments struct will hold the offset, consumer and producer ready for
 // passing into the main process method, this allows setup to be done
-// // before any processing
+// before any processing
 type Arguments struct {
 	OffsetArray []int64
 	Consumer    sarama.Consumer
@@ -72,8 +72,9 @@ func main() {
 	processMessages(arguments)
 }
 
-// Process the message by republishing them and outputting them
-// if the json-out flag is set to true
+// processMessages iterates through the topic messages and
+// republishes them and outputting them if the json-out flag
+// is set to true
 func processMessages(argu Arguments) {
 
 	// create messages chan
@@ -133,6 +134,8 @@ ConsumerLoop:
 	}
 }
 
+// outputJSON prints the deserialised json message to the console for
+// easier reading if the json-out flag is set to 1
 func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 	schemaStruct := schemas.IdentifySchema(*topicPtr)
 
@@ -221,7 +224,8 @@ func contains(s string, e []string) bool {
 	return false
 }
 
-// Prints the flags and parameters of the tool
+// printFlags prints the flags and parameters of the tool
+// to the console
 func printFlags() {
 	fmt.Println("---------------------")
 	fmt.Println("Parameters:")
@@ -231,8 +235,8 @@ func printFlags() {
 	fmt.Println("---------------------")
 }
 
-// The offset slice is passed into method and is iterated over and each message
-// related to the offset in the topic/partition is outputted into the 'out' chan
+// consumePartition iterates over and each message in the topic related to the offset number
+// in the offsetArray and outputs the message into the 'out' chan
 func consumePartition(consumer sarama.Consumer, topic string, partition int32, out chan *sarama.ConsumerMessage, offsetArray []int64) {
 	for _, offset := range offsetArray {
 		partitionConsumer, err := consumer.ConsumePartition(topic, partition, offset)
@@ -248,8 +252,8 @@ func consumePartition(consumer sarama.Consumer, topic string, partition int32, o
 	}
 }
 
-// This creates the offset array depending on whether a range or a single value
-// is entered as an argument to the tool
+// createOffsetArray creates the offset array depending on whether a
+// range or a single value is entered as an argument to the tool
 func createOffsetArray(offset string) []int64 {
 	arraySize := make([]int64, 0)
 	if strings.ContainsAny(offset, "-") {
