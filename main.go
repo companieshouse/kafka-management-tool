@@ -27,6 +27,9 @@ var (
 	jsonOutPtr        = flag.Int64("json-out", 0, "Print deserialized JSON message (default: 0)")
 )
 
+// this struct will hold the offset, consumer and producer ready for
+// passing into the main process method, this allows setup to be done
+// // before any processing
 type Arguments struct {
 	OffsetArray []int64
 	Consumer    sarama.Consumer
