@@ -19,6 +19,8 @@ func TestUnitProcessMessages(t *testing.T) {
 
 		producerMock := mocks.NewSyncProducer(t, nil)
 		producerMock.ExpectSendMessageAndSucceed()
+		var valueChecker mocks.ValueChecker
+		producerMock.ExpectSendMessageWithCheckerFunctionAndSucceed(valueChecker)
 		argu := Arguments{
 			OffsetArray: offsetArraySingle,
 			Consumer:    consumerMock,
@@ -35,7 +37,7 @@ func TestUnitValidateFlags(t *testing.T) {
 	flag.Set("schema-registry", "schema-registry")
 	flag.Set("topic", "topic")
 
-	Convey("test successful", t, func() {
+	Convey("test successful - flags validated", t, func() {
 		So(validateFlags(), ShouldBeNil)
 	})
 }
@@ -52,7 +54,7 @@ func TestUnitCreateOffsetArray(t *testing.T) {
 	arrayRange = append(arrayRange, 14)
 	arrayRange = append(arrayRange, 15)
 
-	Convey("test successful", t, func() {
+	Convey("test successful - offsetArray created", t, func() {
 		So(createOffsetArray("10"), ShouldResemble, arraySingle)
 		So(createOffsetArray("10-15"), ShouldResemble, arrayRange)
 	})
