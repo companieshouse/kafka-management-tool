@@ -197,7 +197,7 @@ func validateFlags() error {
 	//args := os.Args
 	var error int8
 	flag.VisitAll(func(f *flag.Flag) {
-		if string(f.Value.String()) == "" {
+		if f.Value.String() == "" {
 			fmt.Printf("Value not supplied for: %v \n", f.Name)
 			error = 1
 		}
