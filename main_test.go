@@ -43,16 +43,9 @@ func TestUnitValidateFlags(t *testing.T) {
 }
 
 func TestUnitCreateOffsetArray(t *testing.T) {
-	arraySingle := make([]int64, 0)
-	arraySingle = append(arraySingle, 10)
+	arraySingle := []int64{10}
 
-	arrayRange := make([]int64, 0)
-	arrayRange = append(arrayRange, 10)
-	arrayRange = append(arrayRange, 11)
-	arrayRange = append(arrayRange, 12)
-	arrayRange = append(arrayRange, 13)
-	arrayRange = append(arrayRange, 14)
-	arrayRange = append(arrayRange, 15)
+	arrayRange := []int64{10, 11, 12, 13, 14, 15}
 
 	Convey("test successful - offsetArray created", t, func() {
 		So(createOffsetArray("10"), ShouldResemble, arraySingle)
