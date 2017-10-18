@@ -1,6 +1,6 @@
 package schemas
 
-//  DocumentGenerationCompleted struct for document-generation-completed topic
+// DocumentGenerationCompleted struct for document-generation-completed topic
 type DocumentGenerationCompleted struct {
 	RequesterID           string            `avro:"requester_id"                    json:"requester_id"`
 	ID                    string            `avro:"id"                              json:"id"`

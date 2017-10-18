@@ -1,6 +1,6 @@
 package schemas
 
-//  RenderSubmittedDataDocument struct for render-submitted-data-document topic
+// RenderSubmittedDataDocument struct for render-submitted-data-document topic
 type RenderSubmittedDataDocument struct {
 	ID           string `avro:"id"                              json:"id"`
 	Resource     string `avro:"resource"                        json:"resource"`

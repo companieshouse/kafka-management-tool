@@ -1,7 +1,7 @@
 package schemas
 
-//  IdentifySchema takes the topic name as a parameter
-//  and determines the struct to return as a schema.
+// IdentifySchema takes the topic name as a parameter
+// and determines the struct to return as a schema.
 func IdentifySchema(topicName string) interface{} {
 	switch topicName {
 	case "tx-closed":

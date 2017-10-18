@@ -1,6 +1,6 @@
 package schemas
 
-//  EmailSend struct for email-send topic
+// EmailSend struct for email-send topic
 type EmailSend struct {
 	AppID        string `avro:"app_id"                          json:"app_id"`
 	MessageID    string `avro:"message_id"                      json:"message_id"`

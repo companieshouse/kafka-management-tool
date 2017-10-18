@@ -1,6 +1,6 @@
 package schemas
 
-//  FilingReceived struct for filing-received topic
+// FilingReceived struct for filing-received topic
 type FilingReceived struct {
 	ApplicationID string                   `avro:"application_id"                  json:"application_id"`
 	Attempt       int32                    `avro:"attempt"                         json:"attempt"`
