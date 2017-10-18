@@ -195,7 +195,7 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 // throw an error if not the case
 func validateFlags() error {
 	//args := os.Args
-	var error int8 = 0
+	var error int8
 	flag.VisitAll(func(f *flag.Flag) {
 		if string(f.Value.String()) == "" {
 			fmt.Printf("Value not supplied for: %v \n", f.Name)
