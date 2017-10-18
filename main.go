@@ -235,7 +235,7 @@ func printFlags() {
 // related to the offset in the topic/partition is outputted into the 'out' chan
 func consumePartition(consumer sarama.Consumer, topic string, partition int32, out chan *sarama.ConsumerMessage, offsetArray []int64) {
 	for _, offset := range offsetArray {
-		partitionConsumer, err := consumer.ConsumePartition(topic, partition, int64(offset))
+		partitionConsumer, err := consumer.ConsumePartition(topic, partition, offset)
 		if err != nil {
 			panic(err)
 		}
