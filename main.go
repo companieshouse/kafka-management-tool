@@ -113,7 +113,7 @@ ConsumerLoop:
 			fmt.Printf("Republishing message for offset: %v \n", msg.Offset)
 			partition, offset, err := argu.Producer.Send(producerMessage)
 			if err != nil {
-				fmt.Println("error republishing message with offset: %v, \n", msg.Offset)
+				fmt.Println("error republishing message with offset: %d, \n", msg.Offset)
 				panic(err)
 			}
 			fmt.Printf("Successfully republished message with offset %v to topic: %v using partition: %v new offset: %v \n", msg.Offset, *topicPtr, partition, offset)
