@@ -17,16 +17,16 @@ import (
 	"github.com/companieshouse/kafka-management-tool/schemas"
 )
 
-// Assigns all flags to variables
-var (
-	brokerPtr         = flag.String("broker", "", "Broker address")
-	topicPtr          = flag.String("topic", "", "Topic name")
-	schemaPtr         = flag.String("schema", "", "Schema name")
-	schemaRegistryPtr = flag.String("schema-registry", "", "Schema Registry")
-	partitionPtr      = flag.Int64("partition", 0, "Partition (default: 0)")
-	offsetPtr         = flag.String("offset", "", "Offset number, can be single offset number i.e. 10 or a range separated by the - operator i.e. 10-20")
-	jsonOutPtr        = flag.Int64("json-out", 0, "Print deserialized JSON message (default: 0)")
-)
+// MandatoryFlags lists all flags and their types
+type MandatoryFlags struct {
+	Broker         string
+	Topic          string
+	Schema         string
+	SchemaRegistry string
+	Partition      int64
+	Offset         string
+	JsonOut        int64
+}
 
 // Arguments struct will hold the offset, consumer and producer ready for
 // passing into the main process method, this allows setup to be done
@@ -37,11 +37,25 @@ type Arguments struct {
 	Producer    *producer.Producer
 }
 
+// flags is the global variable for the command line flags
+var flags MandatoryFlags
+
+// init maps all flag inputs to the flags package variable
+func init() {
+	flag.StringVar(&flags.Broker, "broker", "", "Broker address")
+	flag.StringVar(&flags.Topic, "topic", "", "Topic name")
+	flag.StringVar(&flags.Schema, "schema", "", "Schema name")
+	flag.StringVar(&flags.SchemaRegistry, "schema-registry", "", "Schema Registry")
+	flag.Int64Var(&flags.Partition, "partition", 0, "Partition (default: 0)")
+	flag.StringVar(&flags.Offset, "offset", "", "Offset number, can be single offset number i.e. 10 or a range separated by the - operator i.e. 10-20")
+	flag.Int64Var(&flags.JsonOut, "json-out", 0, "Print deserialized JSON message (default: 0)")
+}
+
 func main() {
 	flag.Parse()
 
 	// check if all mandatory flags have been provided
-	if err := validateFlags(); err != nil {
+	if err := validateFlags(createFlagMap()); err != nil {
 		panic(err)
 	}
 
@@ -49,14 +63,14 @@ func main() {
 	printFlags()
 
 	//create consumer
-	consumer, err := sarama.NewConsumer([]string{*brokerPtr}, nil)
+	consumer, err := sarama.NewConsumer([]string{flags.Broker}, nil)
 	if err != nil {
 		fmt.Println("error creating consumer")
 		panic(err)
 	}
 
 	//create new producer
-	p, err := producer.New(&producer.Config{Acks: &producer.WaitForAll, BrokerAddrs: []string{*brokerPtr}})
+	p, err := producer.New(&producer.Config{Acks: &producer.WaitForAll, BrokerAddrs: []string{flags.Broker}})
 	if err != nil {
 		fmt.Println("error creating producer")
 		panic(err)
@@ -64,7 +78,7 @@ func main() {
 
 	// pass arguments to struct
 	arguments := Arguments{
-		OffsetArray: createOffsetArray(*offsetPtr),
+		OffsetArray: createOffsetArray(flags.Offset),
 		Consumer:    consumer,
 		Producer:    p,
 	}
@@ -80,7 +94,7 @@ func processMessages(argu Arguments) {
 
 	// create messages chan
 	messages := make(chan *sarama.ConsumerMessage)
-	go consumePartition(argu.Consumer, *topicPtr, int32(*partitionPtr), messages, argu.OffsetArray)
+	go consumePartition(argu.Consumer, flags.Topic, int32(flags.Partition), messages, argu.OffsetArray)
 
 	// create signals chan
 	signals := make(chan os.Signal, 1)
@@ -97,7 +111,7 @@ ConsumerLoop:
 
 			// if jsonOutPtr is set to 1, then output JSON and republish
 			// otherwise just republish message
-			if *jsonOutPtr == 1 {
+			if flags.JsonOut == 1 {
 				go outputJSON(msg, messageBytes)
 			} else {
 				go func() {
@@ -108,17 +122,17 @@ ConsumerLoop:
 			// create producer message
 			producerMessage := &producer.Message{
 				Value: <-messageBytes,
-				Topic: *topicPtr,
+				Topic: flags.Topic,
 			}
 
 			// republish message
-			fmt.Printf("Republishing message for offset: %v \n", msg.Offset)
+			fmt.Printf("Republishing message for offset: %d \n", msg.Offset)
 			partition, offset, err := argu.Producer.Send(producerMessage)
 			if err != nil {
-				fmt.Println("error republishing message with offset: %d, \n", msg.Offset)
+				fmt.Printf("error republishing message with offset: %d, \n", msg.Offset)
 				panic(err)
 			}
-			fmt.Printf("Successfully republished message with offset %v to topic: %v using partition: %v new offset: %v \n", msg.Offset, *topicPtr, partition, offset)
+			fmt.Printf("Successfully republished message with offset %v to topic: %v using partition: %v new offset: %v \n", msg.Offset, flags.Topic, partition, offset)
 			fmt.Println("---------------------")
 
 			consumed++
@@ -138,7 +152,7 @@ ConsumerLoop:
 // outputJSON prints the deserialised json message to the console for
 // easier reading if the json-out flag is set to 1
 func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
-	schemaStruct := schemas.IdentifySchema(*topicPtr)
+	schemaStruct := schemas.IdentifySchema(flags.Topic)
 
 	if schemaStruct == nil {
 		fmt.Println("no schema identified")
@@ -148,13 +162,13 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 	var err error
 
 	// Get schema from schema registry and use it to create avro consumer
-	fmt.Printf("Getting schema for topic: %v \n", *topicPtr)
-	schema, err := schema.Get(*schemaRegistryPtr, *schemaPtr)
+	fmt.Printf("Getting schema for topic: %v \n", flags.Topic)
+	schema, err := schema.Get(flags.SchemaRegistry, flags.Schema)
 	if err != nil {
 		fmt.Println("error getting schema")
 		panic(err)
 	}
-	fmt.Printf("Retrieved schema for topic: %v \n", *topicPtr)
+	fmt.Printf("Retrieved schema for topic: %v \n", flags.Topic)
 
 	consumerAvro := &avro.Schema{
 		Definition: schema,
@@ -195,34 +209,35 @@ func outputJSON(msg *sarama.ConsumerMessage, messageBytes chan []byte) {
 	messageBytes <- message
 }
 
+// createFlagMap creates a map of flags to be used for validation
+// to check if the correct flags have been specified
+func createFlagMap() map[string]string {
+	flagsMap := make(map[string]string)
+	flagsMap["broker"] = flags.Broker
+	flagsMap["topic"] = flags.Topic
+	flagsMap["schema"] = flags.Schema
+	flagsMap["schema-registry"] = flags.SchemaRegistry
+	flagsMap["partition"] = string(flags.Partition)
+	flagsMap["offset"] = flags.Offset
+	flagsMap["json-out"] = string(flags.JsonOut)
+	return flagsMap
+}
+
 // Validates the flags to make sure all mandatory flags have been supplied
 // throw an error if not the case
-func validateFlags() error {
-	//args := os.Args
+func validateFlags(flags map[string]string) error {
 	var error int8
-	flag.VisitAll(func(f *flag.Flag) {
-		if f.Value.String() == "" {
-			fmt.Printf("Value not supplied for: %v \n", f.Name)
+	for k := range flags {
+		if flags[k] == "" {
+			fmt.Printf("Value not supplied for: %v \n", k)
 			error = 1
 		}
-	})
+	}
 
 	if error == 1 {
 		return errors.New("flag validation failed")
 	}
 	return nil
-}
-
-// checks if s is within the e string array.
-// this will be used to check if the flag matches the ones passed into
-// program. This is for the unit tests as the flags package add extra flags
-func contains(s string, e []string) bool {
-	for _, a := range e {
-		if a == s {
-			return true
-		}
-	}
-	return false
 }
 
 // printFlags prints the flags and parameters of the tool
@@ -245,14 +260,12 @@ func consumePartition(consumer sarama.Consumer, topic string, partition int32, o
 			panic(err)
 		}
 
-		select {
-		case msg := <-partitionConsumer.Messages():
-			err := partitionConsumer.Close()
-			if err != nil {
-				panic(err)
-			}
-			out <- msg
+		msg := <-partitionConsumer.Messages()
+		err = partitionConsumer.Close()
+		if err != nil {
+			panic(err)
 		}
+		out <- msg
 	}
 }
 
