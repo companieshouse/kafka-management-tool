@@ -12,7 +12,7 @@ type DocumentGenerationCompleted struct {
 	DocumentSize          string            `avro:"document_size"                   json:"document_size"`
 }
 
-//  DescriptionValues struct for document-generation-completed topic
+// DescriptionValues struct for document-generation-completed topic
 type DescriptionValues struct {
 	Date string `avro:"date"                            json:"date"`
 }

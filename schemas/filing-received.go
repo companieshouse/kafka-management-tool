@@ -10,7 +10,7 @@ type FilingReceived struct {
 	Items         []Items                  `avro:"items"                           json:"items"`
 }
 
-//  PresenterFilingReceived struct represents PresenterFilingReceived in the FilingReceived struct
+// PresenterFilingReceived struct represents PresenterFilingReceived in the FilingReceived struct
 type PresenterFilingRecieved struct {
 	Forename string `avro:"forename"                        json:"forename"`
 	Language string `avro:"language"                        json:"language"`
@@ -18,7 +18,7 @@ type PresenterFilingRecieved struct {
 	UserID   string `avro:"user_id"                         json:"user_id"`
 }
 
-//  SubmissionFilingReceived struct represents SubmissionFilingReceived in the FilingReceived struct
+// SubmissionFilingReceived struct represents SubmissionFilingReceived in the FilingReceived struct
 type SubmissionFilingRecieved struct {
 	CompanyNumber string `avro:"company_number"                  json:"company_number"`
 	CompanyName   string `avro:"company_name"                    json:"company_name"`
@@ -26,7 +26,7 @@ type SubmissionFilingRecieved struct {
 	TransactionID string `avro:"transaction_id"                  json:"transaction_id"`
 }
 
-//  Items struct represents Items in the FilingReceived struct
+// Items struct represents Items in the FilingReceived struct
 type Items struct {
 	Data               string `avro:"data"                            json:"data"`
 	Kind               string `avro:"kind"                            json:"kind"`
