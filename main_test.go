@@ -24,10 +24,6 @@ func TestUnitProcessMessages(t *testing.T) {
 		producerMock := mocks.NewSyncProducer(t, nil)
 		producerMock.ExpectSendMessageAndSucceed()
 
-		//value := mocks.ValueChecker(func(value []byte) error {
-		//   lvalue = lvalue + 1
-		//   return nil
-		//})
 		producerMock.ExpectSendMessageWithCheckerFunctionAndSucceed(increment())
 		argu := Arguments{
 			OffsetArray: offsetArraySingle,
@@ -35,8 +31,15 @@ func TestUnitProcessMessages(t *testing.T) {
 			Producer:    &producer.Producer{producerMock},
 		}
 		processMessages(argu)
-		So(lvalue, ShouldEqual, 0)
+		So(lvalue, ShouldEqual, 1)
 	})
+}
+
+func increment() func([]byte) error {
+	return func(val []byte) error {
+		lvalue = lvalue + 1
+		return nil
+	}
 }
 
 // TestUnitCreateFlagMap tests the createFlagMap function in main.go
@@ -64,6 +67,17 @@ func TestUnitValidateFlags(t *testing.T) {
 	})
 }
 
+// TestUnitValidateFlagsWithInvalidMap tests the validateFlags function
+// that is the validation method for the flags with an invalid map
+func TestUnitValidateFlagsWithInvalidMap(t *testing.T) {
+	flagsMap := make(map[string]string)
+	flagsMap["offset"] = ""
+
+	Convey("test successful - flags validated", t, func() {
+		So(validateFlags(flagsMap), ShouldNotBeNil)
+	})
+}
+
 // TestUnitCreateOffsetArray tests the createOffsetArray function in main.go
 // that create the offset array from the offset passed into the tool as a param arg
 func TestUnitCreateOffsetArray(t *testing.T) {
@@ -75,11 +89,4 @@ func TestUnitCreateOffsetArray(t *testing.T) {
 		So(createOffsetArray("10"), ShouldResemble, arraySingle)
 		So(createOffsetArray("10-15"), ShouldResemble, arrayRange)
 	})
-}
-
-func increment() func([]byte) error {
-	return func(val []byte) error {
-		lvalue = lvalue + 1
-		return nil
-	}
 }
