@@ -25,7 +25,7 @@ type MandatoryFlags struct {
 	SchemaRegistry string
 	Partition      int64
 	Offset         string
-	JsonOut        int64
+	JSONOut        int64
 }
 
 // Arguments struct will hold the offset, consumer and producer ready for
@@ -48,7 +48,7 @@ func init() {
 	flag.StringVar(&flags.SchemaRegistry, "schema-registry", "", "Schema Registry")
 	flag.Int64Var(&flags.Partition, "partition", 0, "Partition (default: 0)")
 	flag.StringVar(&flags.Offset, "offset", "", "Offset number, can be single offset number i.e. 10 or a range separated by the - operator i.e. 10-20")
-	flag.Int64Var(&flags.JsonOut, "json-out", 0, "Print deserialized JSON message (default: 0)")
+	flag.Int64Var(&flags.JSONOut, "json-out", 0, "Print deserialized JSON message (default: 0)")
 }
 
 func main() {
@@ -111,7 +111,7 @@ ConsumerLoop:
 
 			// if jsonOutPtr is set to 1, then output JSON and republish
 			// otherwise just republish message
-			if flags.JsonOut == 1 {
+			if flags.JSONOut == 1 {
 				go outputJSON(msg, messageBytes)
 			} else {
 				go func() {
@@ -219,7 +219,7 @@ func createFlagMap() map[string]string {
 	flagsMap["schema-registry"] = flags.SchemaRegistry
 	flagsMap["partition"] = string(flags.Partition)
 	flagsMap["offset"] = flags.Offset
-	flagsMap["json-out"] = string(flags.JsonOut)
+	flagsMap["json-out"] = string(flags.JSONOut)
 	return flagsMap
 }
 
