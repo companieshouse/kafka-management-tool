@@ -22,7 +22,6 @@ func TestUnitProcessMessages(t *testing.T) {
 		consumerGroup.YieldMessage(&sarama.ConsumerMessage{})
 
 		producerMock := mocks.NewSyncProducer(t, nil)
-		producerMock.ExpectSendMessageAndSucceed()
 
 		producerMock.ExpectSendMessageWithCheckerFunctionAndSucceed(increment())
 		argu := Arguments{
