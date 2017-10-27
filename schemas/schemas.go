@@ -4,7 +4,7 @@ package schemas
 // and determines the struct to return as a schema.
 func IdentifySchema(topicName string) interface{} {
 	switch topicName {
-	case "tx-closed":
+	case "tx-closed", "tx-closed-failed":
 		return &TxClosed{}
 	case "document-generation-started":
 		return &DocumentGenerationStarted{}
