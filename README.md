@@ -9,10 +9,10 @@ To use this tool you will need to:
 
 ## Getting started
 To build the service, you must first git clone it into your `$GOPATH` under `src/github.com/companieshouse`, and then run `make build` to build an executable in the current directory. To run the tool you can either do the following:
-1) Perform `make build` in the `kafka-management-tool` root to create an executable. Then, assuming you are in the root, you can just run `kafka-management-tool [insert flag arguements here]` and it will run the tool.   
+1) Perform `make build` in the `kafka-management-tool` root to create an executable. Then, assuming you are in the root, you can just run `kafka-management-tool [insert flag arguments here]` and it will run the tool.   
 Example:  
 `kafka-management-tool -broker=kafka-broker:9092 -topic=topic-one -schema=schema-one  -schema-registry=http://kafka-registry:8081 -partition=0 -offset=693 -json-out=0`
-2) Perform `make install` and it will create an executable in the `$GOPATH/bin` directory where you can then execute the tool from anywhere using the following command `$GOPATH/bin/kafka-management-tool [insert flag arguements here]` and it will run the tool.  
+2) Perform `make install` and it will create an executable in the `$GOPATH/bin` directory where you can then execute the tool from anywhere using the following command `$GOPATH/bin/kafka-management-tool [insert flag arguments here]` and it will run the tool.  
 Example:  
 `$GOPATH/bin/kafka-management-tool -broker=kafka-broker:9092 -topic=topic-one -schema=schema-one  -schema-registry=http://kafka-registry:8081 -partition=0 -offset=693 -json-out=0`
 
