@@ -6,7 +6,7 @@ type FilingReceived struct {
 	Attempt       int32                    `avro:"attempt"                         json:"attempt"`
 	ChannelID     string                   `avro:"channel_id"                      json:"channel_id"`
 	Presenter     PresenterFilingReceived  `avro:"presenter"                       json:"presenter"`
-	Submission    SubmissionFilingReceived `avro:"published_at"                    json:"published_at"`
+	Submission    SubmissionFilingReceived `avro:"submission"                      json:"submission"`
 	Items         []Items                  `avro:"items"                           json:"items"`
 }
 
