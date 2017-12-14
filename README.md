@@ -109,4 +109,4 @@ $
 ```
 
 ### Maintenance
-At some point, the amount of topics will more than likely change. This means - due to the requirement of topics requiring Avro structs to map the data to - more Avro structs will need to be created for those topics. Information on how this should be done in the tool in the [README.md]() within the [schema] directory.
+At some point, the amount of topics will more than likely change. This means - due to the requirement of topics requiring Avro structs to map the data to - more Avro structs will need to be created for those topics. Information on how this should be done in the tool in the [README.md](https://github.com/companieshouse/kafka-management-tool/blob/readme-update/schemas/README.md) within the [schema](https://github.com/companieshouse/kafka-management-tool/tree/readme-update/schemas) directory.
