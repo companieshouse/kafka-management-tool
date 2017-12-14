@@ -1,0 +1,10 @@
+#IntelliJ Files
+.idea
+*.imls
+
+._*
+build
+kafka-management-tool-*.zip
+build.log
+test.xml
+lint.txt
