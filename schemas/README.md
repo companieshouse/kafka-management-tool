@@ -18,7 +18,7 @@ Here, some examples on how to amend the kafka-management-tool schema structs wil
 
 ### Addition of new topic and Avro schema
 If a new topic called `tx-open` was added with the Avro schema `tx-open.avsc`, with the following strcuture:
-```json
+```
 {
   \"type\": \"record\",
   \"name\": \"transaction_open\",
