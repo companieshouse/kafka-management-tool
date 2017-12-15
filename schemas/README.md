@@ -1,7 +1,7 @@
 # Maintenance
 
 ## Introduction
-At some point in time there will be an increase an topics or even a change to the existing topic structure. If at any point one of these happen, this will require a change to the Avro schemas in further requiring a change in the structs that represent the Avro schemas. These structs are used by the kafka-management-tool in order to map the unmarshalled JSON message from with the specified topic.
+At some point in time there will be in increase an topics or even a change to the existing topic structure. If at any point one of these happen, this will require a change to the Avro schemas in further requiring a change in the structs that represent the Avro schemas. These structs are used by the kafka-management-tool in order to map the unmarshalled JSON message from with the specified topic.
 
 ## Walkthrough
 If a change is made to an existing topic structure/schema or if a new topic and Avro schema has been added this will need to be reflected in the kafka-management-tool schema struct for the corresponding Avro schema.
