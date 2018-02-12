@@ -71,4 +71,4 @@ An example of the new and updated version of the schema would look like the foll
 }
 ```
 
-Additionally in the Go structs and/or Java pojos, there would be an extra field added to t reflect the new field in the Avro schema.
+Additionally in the Go structs and/or Java pojos, there would be an extra field added to it to reflect the new field in the Avro schema.
