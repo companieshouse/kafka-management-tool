@@ -18,7 +18,7 @@ func IdentifySchema(topicName string) interface{} {
 		return &FilingReceived{}
 	case "filing-processed":
 		return &FilingProcessed{}
-	case "resource_changed":
+	case "resource-changed":
 		return &ResourceChanged{}
 	}
 	return nil
