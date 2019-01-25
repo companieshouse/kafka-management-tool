@@ -5,6 +5,7 @@
 ._*
 build
 kafka-management-tool-*.zip
+kafka-management-tool
 build.log
 test.xml
 lint.txt
