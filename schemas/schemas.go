@@ -20,6 +20,8 @@ func IdentifySchema(topicName string) interface{} {
 		return &FilingProcessed{}
 	case "resource-changed":
 		return &ResourceChanged{}
+	case "officers-delta":
+		return &ChsDelta{}
 	}
 	return nil
 }
