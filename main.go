@@ -1,3 +1,4 @@
+//go:debug x509negativeserial=1
 package main
 
 import (
@@ -217,9 +218,9 @@ func createFlagMap() map[string]string {
 	flagsMap["topic"] = flags.Topic
 	flagsMap["schema"] = flags.Schema
 	flagsMap["schema-registry"] = flags.SchemaRegistry
-	flagsMap["partition"] = string(flags.Partition)
+	flagsMap["partition"] = strconv.FormatInt(flags.Partition, 10)
 	flagsMap["offset"] = flags.Offset
-	flagsMap["json-out"] = string(flags.JSONOut)
+	flagsMap["json-out"] = strconv.FormatInt(flags.JSONOut, 10)
 	return flagsMap
 }
 
