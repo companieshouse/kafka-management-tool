@@ -5,7 +5,7 @@ The kafka-management-tool is a command line `Go` tool that has been created for 
 
 ## Prerequisites 
 To use this tool you will need to:
-- Have `Go` installed
+- Have [GO v1.23](https://tip.golang.org/doc/go1.23) installed
 
 ## Getting started
 To build the service, you must first git clone it into your `$GOPATH` under `src/github.com/companieshouse`, and then run `make build` to build an executable in the current directory. To run the tool you can either do the following:
